@@ -2,20 +2,761 @@
  "cells": [
   {
    "cell_type": "code",
-   "execution_count": 3,
+   "execution_count": 54,
    "metadata": {},
    "outputs": [],
    "source": [
-    "x = 9"
+    "import numpy as np\n",
+    "import matplotlib.pyplot as plt\n",
+    "import pandas as pd\n",
+    "%matplotlib inline\n",
+    "\n"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": 55,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[<matplotlib.lines.Line2D at 0x1b011ef6188>]"
+      ]
+     },
+     "execution_count": 55,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "image/png": "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\n",
+      "text/plain": [
+       "<Figure size 432x288 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "plt.plot([32,23,12])\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### numpy array"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 56,
    "metadata": {},
    "outputs": [],
    "source": [
-    "y = x*x*32"
+    "x_array = np.array([1,2,3,4,5,6,7,8,9,10])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### operacje skalarne jeśli się da"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 57,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([ 5, 10, 15, 20, 25, 30, 35, 40, 45, 50])"
+      ]
+     },
+     "execution_count": 57,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "x_array*5"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 58,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "b_matrix = np.array([[1,2,3],\n",
+    "                     [4,5,6],\n",
+    "                     [7,8,9]])\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 59,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[1, 2, 3, 4, 5, 6, 7, 8, 9]])"
+      ]
+     },
+     "execution_count": 59,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "b_matrix.reshape(1,9)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### macierz jednostkowa 10x10 (reshape) razy 3"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 63,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[3, 3, 3, 3, 3, 3, 3, 3, 3, 3],\n",
+       "       [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],\n",
+       "       [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],\n",
+       "       [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],\n",
+       "       [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],\n",
+       "       [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],\n",
+       "       [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],\n",
+       "       [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],\n",
+       "       [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],\n",
+       "       [3, 3, 3, 3, 3, 3, 3, 3, 3, 3]])"
+      ]
+     },
+     "execution_count": 63,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "np.ones(100, dtype=int).reshape(10,10)*3"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# arrange rehape product"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 71,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([ 1,  2,  3,  4,  5,  6,  7,  8,  9, 10])"
+      ]
+     },
+     "execution_count": 71,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "a = np.arange(1,11)\n",
+    "a\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 72,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[ 1],\n",
+       "       [ 2],\n",
+       "       [ 3],\n",
+       "       [ 4],\n",
+       "       [ 5],\n",
+       "       [ 6],\n",
+       "       [ 7],\n",
+       "       [ 8],\n",
+       "       [ 9],\n",
+       "       [10]])"
+      ]
+     },
+     "execution_count": 72,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "b = a.reshape(10,1)\n",
+    "b"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 74,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[  1,   2,   3,   4,   5,   6,   7,   8,   9,  10],\n",
+       "       [  2,   4,   6,   8,  10,  12,  14,  16,  18,  20],\n",
+       "       [  3,   6,   9,  12,  15,  18,  21,  24,  27,  30],\n",
+       "       [  4,   8,  12,  16,  20,  24,  28,  32,  36,  40],\n",
+       "       [  5,  10,  15,  20,  25,  30,  35,  40,  45,  50],\n",
+       "       [  6,  12,  18,  24,  30,  36,  42,  48,  54,  60],\n",
+       "       [  7,  14,  21,  28,  35,  42,  49,  56,  63,  70],\n",
+       "       [  8,  16,  24,  32,  40,  48,  56,  64,  72,  80],\n",
+       "       [  9,  18,  27,  36,  45,  54,  63,  72,  81,  90],\n",
+       "       [ 10,  20,  30,  40,  50,  60,  70,  80,  90, 100]])"
+      ]
+     },
+     "execution_count": 74,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "a*b"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### linspace na przykład od 0 d0 3 podzielone na 1000"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 88,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([0.        , 0.00628947, 0.01257895, 0.01886842, 0.0251579 ,\n",
+       "       0.03144737, 0.03773685, 0.04402632, 0.0503158 , 0.05660527,\n",
+       "       0.06289475, 0.06918422, 0.0754737 , 0.08176317, 0.08805265,\n",
+       "       0.09434212, 0.1006316 , 0.10692107, 0.11321055, 0.11950002,\n",
+       "       0.1257895 , 0.13207897, 0.13836845, 0.14465792, 0.15094739,\n",
+       "       0.15723687, 0.16352634, 0.16981582, 0.17610529, 0.18239477,\n",
+       "       0.18868424, 0.19497372, 0.20126319, 0.20755267, 0.21384214,\n",
+       "       0.22013162, 0.22642109, 0.23271057, 0.23900004, 0.24528952,\n",
+       "       0.25157899, 0.25786847, 0.26415794, 0.27044742, 0.27673689,\n",
+       "       0.28302637, 0.28931584, 0.29560531, 0.30189479, 0.30818426,\n",
+       "       0.31447374, 0.32076321, 0.32705269, 0.33334216, 0.33963164,\n",
+       "       0.34592111, 0.35221059, 0.35850006, 0.36478954, 0.37107901,\n",
+       "       0.37736849, 0.38365796, 0.38994744, 0.39623691, 0.40252639,\n",
+       "       0.40881586, 0.41510534, 0.42139481, 0.42768429, 0.43397376,\n",
+       "       0.44026323, 0.44655271, 0.45284218, 0.45913166, 0.46542113,\n",
+       "       0.47171061, 0.47800008, 0.48428956, 0.49057903, 0.49686851,\n",
+       "       0.50315798, 0.50944746, 0.51573693, 0.52202641, 0.52831588,\n",
+       "       0.53460536, 0.54089483, 0.54718431, 0.55347378, 0.55976326,\n",
+       "       0.56605273, 0.57234221, 0.57863168, 0.58492115, 0.59121063,\n",
+       "       0.5975001 , 0.60378958, 0.61007905, 0.61636853, 0.622658  ,\n",
+       "       0.62894748, 0.63523695, 0.64152643, 0.6478159 , 0.65410538,\n",
+       "       0.66039485, 0.66668433, 0.6729738 , 0.67926328, 0.68555275,\n",
+       "       0.69184223, 0.6981317 , 0.70442118, 0.71071065, 0.71700013,\n",
+       "       0.7232896 , 0.72957907, 0.73586855, 0.74215802, 0.7484475 ,\n",
+       "       0.75473697, 0.76102645, 0.76731592, 0.7736054 , 0.77989487,\n",
+       "       0.78618435, 0.79247382, 0.7987633 , 0.80505277, 0.81134225,\n",
+       "       0.81763172, 0.8239212 , 0.83021067, 0.83650015, 0.84278962,\n",
+       "       0.8490791 , 0.85536857, 0.86165805, 0.86794752, 0.87423699,\n",
+       "       0.88052647, 0.88681594, 0.89310542, 0.89939489, 0.90568437,\n",
+       "       0.91197384, 0.91826332, 0.92455279, 0.93084227, 0.93713174,\n",
+       "       0.94342122, 0.94971069, 0.95600017, 0.96228964, 0.96857912,\n",
+       "       0.97486859, 0.98115807, 0.98744754, 0.99373702, 1.00002649,\n",
+       "       1.00631597, 1.01260544, 1.01889491, 1.02518439, 1.03147386,\n",
+       "       1.03776334, 1.04405281, 1.05034229, 1.05663176, 1.06292124,\n",
+       "       1.06921071, 1.07550019, 1.08178966, 1.08807914, 1.09436861,\n",
+       "       1.10065809, 1.10694756, 1.11323704, 1.11952651, 1.12581599,\n",
+       "       1.13210546, 1.13839494, 1.14468441, 1.15097389, 1.15726336,\n",
+       "       1.16355283, 1.16984231, 1.17613178, 1.18242126, 1.18871073,\n",
+       "       1.19500021, 1.20128968, 1.20757916, 1.21386863, 1.22015811,\n",
+       "       1.22644758, 1.23273706, 1.23902653, 1.24531601, 1.25160548,\n",
+       "       1.25789496, 1.26418443, 1.27047391, 1.27676338, 1.28305286,\n",
+       "       1.28934233, 1.29563181, 1.30192128, 1.30821075, 1.31450023,\n",
+       "       1.3207897 , 1.32707918, 1.33336865, 1.33965813, 1.3459476 ,\n",
+       "       1.35223708, 1.35852655, 1.36481603, 1.3711055 , 1.37739498,\n",
+       "       1.38368445, 1.38997393, 1.3962634 , 1.40255288, 1.40884235,\n",
+       "       1.41513183, 1.4214213 , 1.42771078, 1.43400025, 1.44028973,\n",
+       "       1.4465792 , 1.45286867, 1.45915815, 1.46544762, 1.4717371 ,\n",
+       "       1.47802657, 1.48431605, 1.49060552, 1.496895  , 1.50318447,\n",
+       "       1.50947395, 1.51576342, 1.5220529 , 1.52834237, 1.53463185,\n",
+       "       1.54092132, 1.5472108 , 1.55350027, 1.55978975, 1.56607922,\n",
+       "       1.5723687 , 1.57865817, 1.58494765, 1.59123712, 1.59752659,\n",
+       "       1.60381607, 1.61010554, 1.61639502, 1.62268449, 1.62897397,\n",
+       "       1.63526344, 1.64155292, 1.64784239, 1.65413187, 1.66042134,\n",
+       "       1.66671082, 1.67300029, 1.67928977, 1.68557924, 1.69186872,\n",
+       "       1.69815819, 1.70444767, 1.71073714, 1.71702662, 1.72331609,\n",
+       "       1.72960557, 1.73589504, 1.74218451, 1.74847399, 1.75476346,\n",
+       "       1.76105294, 1.76734241, 1.77363189, 1.77992136, 1.78621084,\n",
+       "       1.79250031, 1.79878979, 1.80507926, 1.81136874, 1.81765821,\n",
+       "       1.82394769, 1.83023716, 1.83652664, 1.84281611, 1.84910559,\n",
+       "       1.85539506, 1.86168454, 1.86797401, 1.87426349, 1.88055296,\n",
+       "       1.88684243, 1.89313191, 1.89942138, 1.90571086, 1.91200033,\n",
+       "       1.91828981, 1.92457928, 1.93086876, 1.93715823, 1.94344771,\n",
+       "       1.94973718, 1.95602666, 1.96231613, 1.96860561, 1.97489508,\n",
+       "       1.98118456, 1.98747403, 1.99376351, 2.00005298, 2.00634246,\n",
+       "       2.01263193, 2.01892141, 2.02521088, 2.03150035, 2.03778983,\n",
+       "       2.0440793 , 2.05036878, 2.05665825, 2.06294773, 2.0692372 ,\n",
+       "       2.07552668, 2.08181615, 2.08810563, 2.0943951 , 2.10068458,\n",
+       "       2.10697405, 2.11326353, 2.119553  , 2.12584248, 2.13213195,\n",
+       "       2.13842143, 2.1447109 , 2.15100038, 2.15728985, 2.16357932,\n",
+       "       2.1698688 , 2.17615827, 2.18244775, 2.18873722, 2.1950267 ,\n",
+       "       2.20131617, 2.20760565, 2.21389512, 2.2201846 , 2.22647407,\n",
+       "       2.23276355, 2.23905302, 2.2453425 , 2.25163197, 2.25792145,\n",
+       "       2.26421092, 2.2705004 , 2.27678987, 2.28307935, 2.28936882,\n",
+       "       2.2956583 , 2.30194777, 2.30823724, 2.31452672, 2.32081619,\n",
+       "       2.32710567, 2.33339514, 2.33968462, 2.34597409, 2.35226357,\n",
+       "       2.35855304, 2.36484252, 2.37113199, 2.37742147, 2.38371094,\n",
+       "       2.39000042, 2.39628989, 2.40257937, 2.40886884, 2.41515832,\n",
+       "       2.42144779, 2.42773727, 2.43402674, 2.44031622, 2.44660569,\n",
+       "       2.45289516, 2.45918464, 2.46547411, 2.47176359, 2.47805306,\n",
+       "       2.48434254, 2.49063201, 2.49692149, 2.50321096, 2.50950044,\n",
+       "       2.51578991, 2.52207939, 2.52836886, 2.53465834, 2.54094781,\n",
+       "       2.54723729, 2.55352676, 2.55981624, 2.56610571, 2.57239519,\n",
+       "       2.57868466, 2.58497414, 2.59126361, 2.59755308, 2.60384256,\n",
+       "       2.61013203, 2.61642151, 2.62271098, 2.62900046, 2.63528993,\n",
+       "       2.64157941, 2.64786888, 2.65415836, 2.66044783, 2.66673731,\n",
+       "       2.67302678, 2.67931626, 2.68560573, 2.69189521, 2.69818468,\n",
+       "       2.70447416, 2.71076363, 2.71705311, 2.72334258, 2.72963206,\n",
+       "       2.73592153, 2.742211  , 2.74850048, 2.75478995, 2.76107943,\n",
+       "       2.7673689 , 2.77365838, 2.77994785, 2.78623733, 2.7925268 ,\n",
+       "       2.79881628, 2.80510575, 2.81139523, 2.8176847 , 2.82397418,\n",
+       "       2.83026365, 2.83655313, 2.8428426 , 2.84913208, 2.85542155,\n",
+       "       2.86171103, 2.8680005 , 2.87428998, 2.88057945, 2.88686892,\n",
+       "       2.8931584 , 2.89944787, 2.90573735, 2.91202682, 2.9183163 ,\n",
+       "       2.92460577, 2.93089525, 2.93718472, 2.9434742 , 2.94976367,\n",
+       "       2.95605315, 2.96234262, 2.9686321 , 2.97492157, 2.98121105,\n",
+       "       2.98750052, 2.99379   , 3.00007947, 3.00636895, 3.01265842,\n",
+       "       3.0189479 , 3.02523737, 3.03152684, 3.03781632, 3.04410579,\n",
+       "       3.05039527, 3.05668474, 3.06297422, 3.06926369, 3.07555317,\n",
+       "       3.08184264, 3.08813212, 3.09442159, 3.10071107, 3.10700054,\n",
+       "       3.11329002, 3.11957949, 3.12586897, 3.13215844, 3.13844792,\n",
+       "       3.14473739, 3.15102687, 3.15731634, 3.16360582, 3.16989529,\n",
+       "       3.17618476, 3.18247424, 3.18876371, 3.19505319, 3.20134266,\n",
+       "       3.20763214, 3.21392161, 3.22021109, 3.22650056, 3.23279004,\n",
+       "       3.23907951, 3.24536899, 3.25165846, 3.25794794, 3.26423741,\n",
+       "       3.27052689, 3.27681636, 3.28310584, 3.28939531, 3.29568479,\n",
+       "       3.30197426, 3.30826374, 3.31455321, 3.32084268, 3.32713216,\n",
+       "       3.33342163, 3.33971111, 3.34600058, 3.35229006, 3.35857953,\n",
+       "       3.36486901, 3.37115848, 3.37744796, 3.38373743, 3.39002691,\n",
+       "       3.39631638, 3.40260586, 3.40889533, 3.41518481, 3.42147428,\n",
+       "       3.42776376, 3.43405323, 3.44034271, 3.44663218, 3.45292166,\n",
+       "       3.45921113, 3.4655006 , 3.47179008, 3.47807955, 3.48436903,\n",
+       "       3.4906585 , 3.49694798, 3.50323745, 3.50952693, 3.5158164 ,\n",
+       "       3.52210588, 3.52839535, 3.53468483, 3.5409743 , 3.54726378,\n",
+       "       3.55355325, 3.55984273, 3.5661322 , 3.57242168, 3.57871115,\n",
+       "       3.58500063, 3.5912901 , 3.59757958, 3.60386905, 3.61015852,\n",
+       "       3.616448  , 3.62273747, 3.62902695, 3.63531642, 3.6416059 ,\n",
+       "       3.64789537, 3.65418485, 3.66047432, 3.6667638 , 3.67305327,\n",
+       "       3.67934275, 3.68563222, 3.6919217 , 3.69821117, 3.70450065,\n",
+       "       3.71079012, 3.7170796 , 3.72336907, 3.72965855, 3.73594802,\n",
+       "       3.7422375 , 3.74852697, 3.75481644, 3.76110592, 3.76739539,\n",
+       "       3.77368487, 3.77997434, 3.78626382, 3.79255329, 3.79884277,\n",
+       "       3.80513224, 3.81142172, 3.81771119, 3.82400067, 3.83029014,\n",
+       "       3.83657962, 3.84286909, 3.84915857, 3.85544804, 3.86173752,\n",
+       "       3.86802699, 3.87431647, 3.88060594, 3.88689542, 3.89318489,\n",
+       "       3.89947436, 3.90576384, 3.91205331, 3.91834279, 3.92463226,\n",
+       "       3.93092174, 3.93721121, 3.94350069, 3.94979016, 3.95607964,\n",
+       "       3.96236911, 3.96865859, 3.97494806, 3.98123754, 3.98752701,\n",
+       "       3.99381649, 4.00010596, 4.00639544, 4.01268491, 4.01897439,\n",
+       "       4.02526386, 4.03155334, 4.03784281, 4.04413228, 4.05042176,\n",
+       "       4.05671123, 4.06300071, 4.06929018, 4.07557966, 4.08186913,\n",
+       "       4.08815861, 4.09444808, 4.10073756, 4.10702703, 4.11331651,\n",
+       "       4.11960598, 4.12589546, 4.13218493, 4.13847441, 4.14476388,\n",
+       "       4.15105336, 4.15734283, 4.16363231, 4.16992178, 4.17621126,\n",
+       "       4.18250073, 4.1887902 , 4.19507968, 4.20136915, 4.20765863,\n",
+       "       4.2139481 , 4.22023758, 4.22652705, 4.23281653, 4.239106  ,\n",
+       "       4.24539548, 4.25168495, 4.25797443, 4.2642639 , 4.27055338,\n",
+       "       4.27684285, 4.28313233, 4.2894218 , 4.29571128, 4.30200075,\n",
+       "       4.30829023, 4.3145797 , 4.32086918, 4.32715865, 4.33344812,\n",
+       "       4.3397376 , 4.34602707, 4.35231655, 4.35860602, 4.3648955 ,\n",
+       "       4.37118497, 4.37747445, 4.38376392, 4.3900534 , 4.39634287,\n",
+       "       4.40263235, 4.40892182, 4.4152113 , 4.42150077, 4.42779025,\n",
+       "       4.43407972, 4.4403692 , 4.44665867, 4.45294815, 4.45923762,\n",
+       "       4.4655271 , 4.47181657, 4.47810604, 4.48439552, 4.49068499,\n",
+       "       4.49697447, 4.50326394, 4.50955342, 4.51584289, 4.52213237,\n",
+       "       4.52842184, 4.53471132, 4.54100079, 4.54729027, 4.55357974,\n",
+       "       4.55986922, 4.56615869, 4.57244817, 4.57873764, 4.58502712,\n",
+       "       4.59131659, 4.59760607, 4.60389554, 4.61018502, 4.61647449,\n",
+       "       4.62276396, 4.62905344, 4.63534291, 4.64163239, 4.64792186,\n",
+       "       4.65421134, 4.66050081, 4.66679029, 4.67307976, 4.67936924,\n",
+       "       4.68565871, 4.69194819, 4.69823766, 4.70452714, 4.71081661,\n",
+       "       4.71710609, 4.72339556, 4.72968504, 4.73597451, 4.74226399,\n",
+       "       4.74855346, 4.75484294, 4.76113241, 4.76742188, 4.77371136,\n",
+       "       4.78000083, 4.78629031, 4.79257978, 4.79886926, 4.80515873,\n",
+       "       4.81144821, 4.81773768, 4.82402716, 4.83031663, 4.83660611,\n",
+       "       4.84289558, 4.84918506, 4.85547453, 4.86176401, 4.86805348,\n",
+       "       4.87434296, 4.88063243, 4.88692191, 4.89321138, 4.89950086,\n",
+       "       4.90579033, 4.9120798 , 4.91836928, 4.92465875, 4.93094823,\n",
+       "       4.9372377 , 4.94352718, 4.94981665, 4.95610613, 4.9623956 ,\n",
+       "       4.96868508, 4.97497455, 4.98126403, 4.9875535 , 4.99384298,\n",
+       "       5.00013245, 5.00642193, 5.0127114 , 5.01900088, 5.02529035,\n",
+       "       5.03157983, 5.0378693 , 5.04415878, 5.05044825, 5.05673772,\n",
+       "       5.0630272 , 5.06931667, 5.07560615, 5.08189562, 5.0881851 ,\n",
+       "       5.09447457, 5.10076405, 5.10705352, 5.113343  , 5.11963247,\n",
+       "       5.12592195, 5.13221142, 5.1385009 , 5.14479037, 5.15107985,\n",
+       "       5.15736932, 5.1636588 , 5.16994827, 5.17623775, 5.18252722,\n",
+       "       5.1888167 , 5.19510617, 5.20139564, 5.20768512, 5.21397459,\n",
+       "       5.22026407, 5.22655354, 5.23284302, 5.23913249, 5.24542197,\n",
+       "       5.25171144, 5.25800092, 5.26429039, 5.27057987, 5.27686934,\n",
+       "       5.28315882, 5.28944829, 5.29573777, 5.30202724, 5.30831672,\n",
+       "       5.31460619, 5.32089567, 5.32718514, 5.33347462, 5.33976409,\n",
+       "       5.34605356, 5.35234304, 5.35863251, 5.36492199, 5.37121146,\n",
+       "       5.37750094, 5.38379041, 5.39007989, 5.39636936, 5.40265884,\n",
+       "       5.40894831, 5.41523779, 5.42152726, 5.42781674, 5.43410621,\n",
+       "       5.44039569, 5.44668516, 5.45297464, 5.45926411, 5.46555359,\n",
+       "       5.47184306, 5.47813254, 5.48442201, 5.49071148, 5.49700096,\n",
+       "       5.50329043, 5.50957991, 5.51586938, 5.52215886, 5.52844833,\n",
+       "       5.53473781, 5.54102728, 5.54731676, 5.55360623, 5.55989571,\n",
+       "       5.56618518, 5.57247466, 5.57876413, 5.58505361, 5.59134308,\n",
+       "       5.59763256, 5.60392203, 5.61021151, 5.61650098, 5.62279046,\n",
+       "       5.62907993, 5.6353694 , 5.64165888, 5.64794835, 5.65423783,\n",
+       "       5.6605273 , 5.66681678, 5.67310625, 5.67939573, 5.6856852 ,\n",
+       "       5.69197468, 5.69826415, 5.70455363, 5.7108431 , 5.71713258,\n",
+       "       5.72342205, 5.72971153, 5.736001  , 5.74229048, 5.74857995,\n",
+       "       5.75486943, 5.7611589 , 5.76744838, 5.77373785, 5.78002732,\n",
+       "       5.7863168 , 5.79260627, 5.79889575, 5.80518522, 5.8114747 ,\n",
+       "       5.81776417, 5.82405365, 5.83034312, 5.8366326 , 5.84292207,\n",
+       "       5.84921155, 5.85550102, 5.8617905 , 5.86807997, 5.87436945,\n",
+       "       5.88065892, 5.8869484 , 5.89323787, 5.89952735, 5.90581682,\n",
+       "       5.9121063 , 5.91839577, 5.92468524, 5.93097472, 5.93726419,\n",
+       "       5.94355367, 5.94984314, 5.95613262, 5.96242209, 5.96871157,\n",
+       "       5.97500104, 5.98129052, 5.98757999, 5.99386947, 6.00015894,\n",
+       "       6.00644842, 6.01273789, 6.01902737, 6.02531684, 6.03160632,\n",
+       "       6.03789579, 6.04418527, 6.05047474, 6.05676422, 6.06305369,\n",
+       "       6.06934316, 6.07563264, 6.08192211, 6.08821159, 6.09450106,\n",
+       "       6.10079054, 6.10708001, 6.11336949, 6.11965896, 6.12594844,\n",
+       "       6.13223791, 6.13852739, 6.14481686, 6.15110634, 6.15739581,\n",
+       "       6.16368529, 6.16997476, 6.17626424, 6.18255371, 6.18884319,\n",
+       "       6.19513266, 6.20142214, 6.20771161, 6.21400108, 6.22029056,\n",
+       "       6.22658003, 6.23286951, 6.23915898, 6.24544846, 6.25173793,\n",
+       "       6.25802741, 6.26431688, 6.27060636, 6.27689583, 6.28318531])"
+      ]
+     },
+     "execution_count": 88,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "sin_args = np.linspace(0,2*np.pi,1000)\n",
+    "sin_args"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 80,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([ 0.        ,  0.00628624,  0.01257224,  0.01885774,  0.0251425 ,\n",
+       "        0.03142626,  0.03770878,  0.0439898 ,  0.05026909,  0.0565464 ,\n",
+       "        0.06282147,  0.06909406,  0.07536391,  0.08163079,  0.08789444,\n",
+       "        0.09415462,  0.10041108,  0.10666357,  0.11291185,  0.11915566,\n",
+       "        0.12539476,  0.13162891,  0.13785786,  0.14408136,  0.15029917,\n",
+       "        0.15651103,  0.16271672,  0.16891597,  0.17510855,  0.1812942 ,\n",
+       "        0.1874727 ,  0.19364378,  0.19980721,  0.20596275,  0.21211015,\n",
+       "        0.21824916,  0.22437955,  0.23050107,  0.23661349,  0.24271655,\n",
+       "        0.24881003,  0.25489367,  0.26096724,  0.26703049,  0.27308319,\n",
+       "        0.27912511,  0.28515599,  0.2911756 ,  0.29718371,  0.30318007,\n",
+       "        0.30916445,  0.31513662,  0.32109633,  0.32704335,  0.33297745,\n",
+       "        0.33889839,  0.34480593,  0.35069986,  0.35657992,  0.36244589,\n",
+       "        0.36829754,  0.37413463,  0.37995694,  0.38576424,  0.39155629,\n",
+       "        0.39733287,  0.40309374,  0.40883869,  0.41456748,  0.42027989,\n",
+       "        0.42597569,  0.43165466,  0.43731657,  0.44296119,  0.44858832,\n",
+       "        0.45419771,  0.45978916,  0.46536244,  0.47091732,  0.4764536 ,\n",
+       "        0.48197105,  0.48746946,  0.4929486 ,  0.49840826,  0.50384822,\n",
+       "        0.50926828,  0.5146682 ,  0.5200478 ,  0.52540684,  0.53074511,\n",
+       "        0.53606242,  0.54135854,  0.54663326,  0.55188639,  0.5571177 ,\n",
+       "        0.56232701,  0.56751408,  0.57267874,  0.57782076,  0.58293995,\n",
+       "        0.5880361 ,  0.59310901,  0.59815849,  0.60318433,  0.60818633,\n",
+       "        0.6131643 ,  0.61811804,  0.62304735,  0.62795204,  0.63283191,\n",
+       "        0.63768678,  0.64251645,  0.64732073,  0.65209942,  0.65685235,\n",
+       "        0.66157932,  0.66628015,  0.67095465,  0.67560263,  0.68022392,\n",
+       "        0.68481832,  0.68938566,  0.69392576,  0.69843844,  0.70292352,\n",
+       "        0.70738082,  0.71181016,  0.71621138,  0.7205843 ,  0.72492874,\n",
+       "        0.72924453,  0.7335315 ,  0.73778949,  0.74201832,  0.74621783,\n",
+       "        0.75038785,  0.75452822,  0.75863877,  0.76271934,  0.76676977,\n",
+       "        0.7707899 ,  0.77477957,  0.77873862,  0.7826669 ,  0.78656425,\n",
+       "        0.79043052,  0.79426555,  0.7980692 ,  0.80184131,  0.80558173,\n",
+       "        0.80929031,  0.81296692,  0.8166114 ,  0.82022361,  0.8238034 ,\n",
+       "        0.82735065,  0.83086519,  0.83434691,  0.83779565,  0.84121128,\n",
+       "        0.84459368,  0.84794269,  0.8512582 ,  0.85454007,  0.85778817,\n",
+       "        0.86100237,  0.86418255,  0.86732858,  0.87044033,  0.87351769,\n",
+       "        0.87656052,  0.87956872,  0.88254216,  0.88548072,  0.8883843 ,\n",
+       "        0.89125276,  0.89408601,  0.89688392,  0.89964639,  0.90237331,\n",
+       "        0.90506457,  0.90772007,  0.91033969,  0.91292334,  0.91547091,\n",
+       "        0.91798231,  0.92045743,  0.92289618,  0.92529845,  0.92766417,\n",
+       "        0.92999322,  0.93228552,  0.93454098,  0.93675951,  0.93894102,\n",
+       "        0.94108543,  0.94319265,  0.94526259,  0.94729518,  0.94929034,\n",
+       "        0.95124798,  0.95316804,  0.95505042,  0.95689507,  0.9587019 ,\n",
+       "        0.96047085,  0.96220184,  0.9638948 ,  0.96554968,  0.9671664 ,\n",
+       "        0.9687449 ,  0.97028512,  0.971787  ,  0.97325047,  0.97467549,\n",
+       "        0.97606198,  0.97740991,  0.97871921,  0.97998984,  0.98122173,\n",
+       "        0.98241486,  0.98356916,  0.98468459,  0.98576111,  0.98679868,\n",
+       "        0.98779725,  0.98875678,  0.98967725,  0.9905586 ,  0.99140081,\n",
+       "        0.99220384,  0.99296766,  0.99369225,  0.99437756,  0.99502358,\n",
+       "        0.99563028,  0.99619763,  0.99672562,  0.99721422,  0.99766342,\n",
+       "        0.99807318,  0.99844351,  0.99877438,  0.99906578,  0.9993177 ,\n",
+       "        0.99953014,  0.99970307,  0.9998365 ,  0.99993041,  0.99998481,\n",
+       "        0.9999997 ,  0.99997507,  0.99991092,  0.99980726,  0.99966409,\n",
+       "        0.99948141,  0.99925924,  0.99899758,  0.99869644,  0.99835584,\n",
+       "        0.99797578,  0.99755629,  0.99709737,  0.99659905,  0.99606136,\n",
+       "        0.99548429,  0.99486789,  0.99421218,  0.99351718,  0.99278291,\n",
+       "        0.99200942,  0.99119672,  0.99034485,  0.98945385,  0.98852375,\n",
+       "        0.98755458,  0.98654639,  0.98549921,  0.98441309,  0.98328806,\n",
+       "        0.98212418,  0.98092149,  0.97968004,  0.97839987,  0.97708103,\n",
+       "        0.97572359,  0.97432759,  0.97289308,  0.97142013,  0.96990879,\n",
+       "        0.96835913,  0.96677119,  0.96514505,  0.96348078,  0.96177842,\n",
+       "        0.96003807,  0.95825977,  0.9564436 ,  0.95458964,  0.95269796,\n",
+       "        0.95076863,  0.94880172,  0.94679733,  0.94475552,  0.94267637,\n",
+       "        0.94055997,  0.9384064 ,  0.93621575,  0.93398811,  0.93172355,\n",
+       "        0.92942218,  0.92708407,  0.92470934,  0.92229806,  0.91985033,\n",
+       "        0.91736625,  0.91484592,  0.91228944,  0.90969691,  0.90706843,\n",
+       "        0.9044041 ,  0.90170403,  0.89896834,  0.89619711,  0.89339047,\n",
+       "        0.89054853,  0.8876714 ,  0.88475918,  0.88181201,  0.87882998,\n",
+       "        0.87581323,  0.87276187,  0.86967602,  0.8665558 ,  0.86340134,\n",
+       "        0.86021276,  0.85699018,  0.85373374,  0.85044356,  0.84711978,\n",
+       "        0.84376252,  0.84037191,  0.8369481 ,  0.83349121,  0.83000139,\n",
+       "        0.82647876,  0.82292348,  0.81933568,  0.81571549,  0.81206308,\n",
+       "        0.80837857,  0.80466212,  0.80091387,  0.79713397,  0.79332257,\n",
+       "        0.78947982,  0.78560587,  0.78170087,  0.77776499,  0.77379837,\n",
+       "        0.76980117,  0.76577355,  0.76171568,  0.75762769,  0.75350978,\n",
+       "        0.74936208,  0.74518477,  0.74097801,  0.73674197,  0.73247682,\n",
+       "        0.72818272,  0.72385985,  0.71950837,  0.71512846,  0.71072029,\n",
+       "        0.70628403,  0.70181986,  0.69732796,  0.6928085 ,  0.68826167,\n",
+       "        0.68368763,  0.67908658,  0.6744587 ,  0.66980416,  0.66512315,\n",
+       "        0.66041585,  0.65568246,  0.65092316,  0.64613814,  0.64132758,\n",
+       "        0.63649168,  0.63163063,  0.62674461,  0.62183383,  0.61689848,\n",
+       "        0.61193874,  0.60695483,  0.60194693,  0.59691524,  0.59185997,\n",
+       "        0.5867813 ,  0.58167945,  0.57655461,  0.57140699,  0.56623679,\n",
+       "        0.56104421,  0.55582946,  0.55059274,  0.54533427,  0.54005425,\n",
+       "        0.53475288,  0.52943039,  0.52408697,  0.51872284,  0.51333821,\n",
+       "        0.5079333 ,  0.50250832,  0.49706347,  0.49159899,  0.48611508,\n",
+       "        0.48061195,  0.47508984,  0.46954895,  0.46398951,  0.45841173,\n",
+       "        0.45281583,  0.44720205,  0.44157058,  0.43592167,  0.43025554,\n",
+       "        0.4245724 ,  0.41887248,  0.41315601,  0.40742321,  0.40167432,\n",
+       "        0.39590955,  0.39012913,  0.3843333 ,  0.37852228,  0.3726963 ,\n",
+       "        0.36685559,  0.36100039,  0.35513092,  0.34924742,  0.34335012,\n",
+       "        0.33743924,  0.33151504,  0.32557773,  0.31962755,  0.31366475,\n",
+       "        0.30768955,  0.30170219,  0.29570291,  0.28969195,  0.28366953,\n",
+       "        0.27763591,  0.27159131,  0.26553598,  0.25947016,  0.25339409,\n",
+       "        0.247308  ,  0.24121214,  0.23510674,  0.22899206,  0.22286833,\n",
+       "        0.21673579,  0.21059468,  0.20444525,  0.19828775,  0.19212241,\n",
+       "        0.18594947,  0.17976919,  0.1735818 ,  0.16738756,  0.1611867 ,\n",
+       "        0.15497947,  0.14876611,  0.14254688,  0.13632201,  0.13009176,\n",
+       "        0.12385636,  0.11761607,  0.11137114,  0.1051218 ,  0.09886831,\n",
+       "        0.09261091,  0.08634985,  0.08008538,  0.07381774,  0.06754719,\n",
+       "        0.06127397,  0.05499832,  0.04872051,  0.04244076,  0.03615934,\n",
+       "        0.0298765 ,  0.02359247,  0.01730751,  0.01102186,  0.00473578,\n",
+       "       -0.00155049, -0.0078367 , -0.01412259, -0.02040793, -0.02669246,\n",
+       "       -0.03297594, -0.03925812, -0.04553874, -0.05181756, -0.05809434,\n",
+       "       -0.06436882, -0.07064076, -0.0769099 , -0.08317601, -0.08943882,\n",
+       "       -0.09569811, -0.10195361, -0.10820509, -0.11445228, -0.12069496,\n",
+       "       -0.12693286, -0.13316575, -0.13939338, -0.1456155 , -0.15183186,\n",
+       "       -0.15804223, -0.16424635, -0.17044397, -0.17663487, -0.18281878,\n",
+       "       -0.18899547, -0.19516469, -0.2013262 , -0.20747975, -0.2136251 ,\n",
+       "       -0.21976201, -0.22589024, -0.23200954, -0.23811967, -0.24422039,\n",
+       "       -0.25031146, -0.25639264, -0.26246368, -0.26852436, -0.27457442,\n",
+       "       -0.28061364, -0.28664176, -0.29265856, -0.29866379, -0.30465722,\n",
+       "       -0.31063861, -0.31660772, -0.32256433, -0.32850818, -0.33443906,\n",
+       "       -0.34035671, -0.34626092, -0.35215145, -0.35802806, -0.36389052,\n",
+       "       -0.3697386 , -0.37557207, -0.3813907 , -0.38719425, -0.39298251,\n",
+       "       -0.39875524, -0.4045122 , -0.41025319, -0.41597796, -0.42168629,\n",
+       "       -0.42737796, -0.43305274, -0.43871041, -0.44435074, -0.44997351,\n",
+       "       -0.4555785 , -0.46116548, -0.46673425, -0.47228456, -0.47781622,\n",
+       "       -0.48332899, -0.48882266, -0.49429702, -0.49975184, -0.50518692,\n",
+       "       -0.51060203, -0.51599696, -0.5213715 , -0.52672544, -0.53205856,\n",
+       "       -0.53737066, -0.54266152, -0.54793094, -0.55317871, -0.55840461,\n",
+       "       -0.56360845, -0.56879002, -0.57394911, -0.57908552, -0.58419904,\n",
+       "       -0.58928948, -0.59435663, -0.5994003 , -0.60442027, -0.60941637,\n",
+       "       -0.61438838, -0.61933611, -0.62425937, -0.62915795, -0.63403168,\n",
+       "       -0.63888035, -0.64370377, -0.64850176, -0.65327412, -0.65802066,\n",
+       "       -0.6627412 , -0.66743555, -0.67210353, -0.67674494, -0.68135961,\n",
+       "       -0.68594736, -0.690508  , -0.69504135, -0.69954724, -0.70402548,\n",
+       "       -0.7084759 , -0.71289833, -0.71729258, -0.72165849, -0.72599588,\n",
+       "       -0.73030458, -0.73458442, -0.73883523, -0.74305684, -0.7472491 ,\n",
+       "       -0.75141182, -0.75554485, -0.75964802, -0.76372117, -0.76776414,\n",
+       "       -0.77177677, -0.77575891, -0.77971038, -0.78363105, -0.78752075,\n",
+       "       -0.79137933, -0.79520663, -0.79900251, -0.80276682, -0.8064994 ,\n",
+       "       -0.81020011, -0.81386881, -0.81750534, -0.82110957, -0.82468135,\n",
+       "       -0.82822054, -0.831727  , -0.83520059, -0.83864118, -0.84204863,\n",
+       "       -0.8454228 , -0.84876357, -0.85207079, -0.85534434, -0.85858409,\n",
+       "       -0.86178992, -0.86496168, -0.86809927, -0.87120255, -0.8742714 ,\n",
+       "       -0.87730571, -0.88030534, -0.88327019, -0.88620013, -0.88909506,\n",
+       "       -0.89195485, -0.89477939, -0.89756857, -0.90032228, -0.90304042,\n",
+       "       -0.90572287, -0.90836952, -0.91098028, -0.91355505, -0.91609371,\n",
+       "       -0.91859616, -0.92106232, -0.92349208, -0.92588535, -0.92824203,\n",
+       "       -0.93056202, -0.93284525, -0.93509161, -0.93730101, -0.93947338,\n",
+       "       -0.94160862, -0.94370666, -0.9457674 , -0.94779076, -0.94977667,\n",
+       "       -0.95172505, -0.95363582, -0.95550891, -0.95734423, -0.95914173,\n",
+       "       -0.96090132, -0.96262294, -0.96430652, -0.96595199, -0.96755929,\n",
+       "       -0.96912835, -0.97065912, -0.97215153, -0.97360552, -0.97502104,\n",
+       "       -0.97639803, -0.97773643, -0.9790362 , -0.98029728, -0.98151962,\n",
+       "       -0.98270317, -0.98384789, -0.98495373, -0.98602064, -0.9870486 ,\n",
+       "       -0.98803754, -0.98898744, -0.98989826, -0.99076996, -0.99160251,\n",
+       "       -0.99239588, -0.99315002, -0.99386493, -0.99454055, -0.99517687,\n",
+       "       -0.99577387, -0.99633152, -0.99684979, -0.99732868, -0.99776815,\n",
+       "       -0.99816819, -0.99852878, -0.99884992, -0.99913159, -0.99937377,\n",
+       "       -0.99957646, -0.99973965, -0.99986333, -0.9999475 , -0.99999216,\n",
+       "       -0.9999973 , -0.99996292, -0.99988902, -0.99977561, -0.9996227 ,\n",
+       "       -0.99943028, -0.99919837, -0.99892697, -0.9986161 , -0.99826576,\n",
+       "       -0.99787598, -0.99744676, -0.99697812, -0.99647009, -0.99592268,\n",
+       "       -0.99533592, -0.99470982, -0.99404441, -0.99333972, -0.99259578,\n",
+       "       -0.99181261, -0.99099025, -0.99012872, -0.98922807, -0.98828833,\n",
+       "       -0.98730954, -0.98629172, -0.98523494, -0.98413922, -0.9830046 ,\n",
+       "       -0.98183115, -0.98061889, -0.97936788, -0.97807817, -0.97674981,\n",
+       "       -0.97538285, -0.97397735, -0.97253336, -0.97105093, -0.96953013,\n",
+       "       -0.96797102, -0.96637366, -0.96473811, -0.96306443, -0.9613527 ,\n",
+       "       -0.95960298, -0.95781533, -0.95598984, -0.95412657, -0.95222559,\n",
+       "       -0.95028699, -0.94831083, -0.94629719, -0.94424617, -0.94215782,\n",
+       "       -0.94003225, -0.93786953, -0.93566975, -0.93343299, -0.93115934,\n",
+       "       -0.9288489 , -0.92650175, -0.92411799, -0.92169771, -0.91924101,\n",
+       "       -0.91674798, -0.91421873, -0.91165335, -0.90905194, -0.90641461,\n",
+       "       -0.90374146, -0.90103259, -0.89828812, -0.89550815, -0.8926928 ,\n",
+       "       -0.88984216, -0.88695636, -0.88403552, -0.88107974, -0.87808913,\n",
+       "       -0.87506384, -0.87200396, -0.86890962, -0.86578094, -0.86261805,\n",
+       "       -0.85942107, -0.85619013, -0.85292536, -0.84962688, -0.84629483,\n",
+       "       -0.84292933, -0.83953052, -0.83609854, -0.83263351, -0.82913559,\n",
+       "       -0.82560489, -0.82204158, -0.81844577, -0.81481763, -0.81115728,\n",
+       "       -0.80746488, -0.80374057, -0.7999845 , -0.79619682, -0.79237767,\n",
+       "       -0.78852721, -0.78464559, -0.78073297, -0.77678949, -0.77281531,\n",
+       "       -0.7688106 , -0.7647755 , -0.76071018, -0.7566148 , -0.75248952,\n",
+       "       -0.74833451, -0.74414992, -0.73993592, -0.73569269, -0.73142038,\n",
+       "       -0.72711917, -0.72278923, -0.71843072, -0.71404382, -0.70962871,\n",
+       "       -0.70518555, -0.70071452, -0.69621581, -0.69168958, -0.68713602,\n",
+       "       -0.68255531, -0.67794762, -0.67331314, -0.66865205, -0.66396454,\n",
+       "       -0.6592508 , -0.654511  , -0.64974534, -0.644954  , -0.64013717,\n",
+       "       -0.63529505, -0.63042782, -0.62553568, -0.62061882, -0.61567743,\n",
+       "       -0.61071172, -0.60572187, -0.60070808, -0.59567056, -0.5906095 ,\n",
+       "       -0.5855251 , -0.58041756, -0.57528708, -0.57013387, -0.56495813,\n",
+       "       -0.55976006, -0.55453987, -0.54929777, -0.54403397, -0.53874866,\n",
+       "       -0.53344206, -0.52811439, -0.52276584, -0.51739664, -0.51200699,\n",
+       "       -0.5065971 , -0.5011672 , -0.49571749, -0.4902482 , -0.48475953,\n",
+       "       -0.4792517 , -0.47372494, -0.46817945, -0.46261546, -0.4570332 ,\n",
+       "       -0.45143287, -0.4458147 , -0.44017891, -0.43452573, -0.42885538,\n",
+       "       -0.42316808, -0.41746406, -0.41174355, -0.40600676, -0.40025392,\n",
+       "       -0.39448527, -0.38870103, -0.38290143, -0.3770867 , -0.37125707,\n",
+       "       -0.36541277, -0.35955402, -0.35368107, -0.34779414, -0.34189347,\n",
+       "       -0.33597929, -0.33005183, -0.32411133, -0.31815802, -0.31219213,\n",
+       "       -0.30621391, -0.30022359, -0.29422141, -0.28820759, -0.28218239,\n",
+       "       -0.27614604, -0.27009877, -0.26404084, -0.25797246, -0.2518939 ,\n",
+       "       -0.24580538, -0.23970714, -0.23359943, -0.2274825 , -0.22135657,\n",
+       "       -0.21522189, -0.20907871, -0.20292727, -0.19676781, -0.19060057,\n",
+       "       -0.1844258 , -0.17824374, -0.17205464, -0.16585874, -0.15965629,\n",
+       "       -0.15344752, -0.1472327 , -0.14101205, -0.13478583, -0.12855429,\n",
+       "       -0.12231766, -0.1160762 , -0.10983016, -0.10357977, -0.0973253 ,\n",
+       "       -0.09106697, -0.08480505, -0.07853977, -0.07227139, -0.06600016,\n",
+       "       -0.05972632, -0.05345011, -0.0471718 , -0.04089162, -0.03460983,\n",
+       "       -0.02832666, -0.02204238, -0.01575723, -0.00947145, -0.0031853 ])"
+      ]
+     },
+     "execution_count": 80,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "sin_values = np.sin(sin_args)\n",
+    "sin_values"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 92,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[<matplotlib.lines.Line2D at 0x1b01232edc8>]"
+      ]
+     },
+     "execution_count": 92,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "image/png": "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\n",
+      "text/plain": [
+       "<Figure size 432x288 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "plt.plot( sin_args, sin_values)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# wektoryzacja funkcji"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 95,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([ 0.55142668,  0.55142668, -0.45987672])"
+      ]
+     },
+     "execution_count": 95,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import math\n",
+    "f1 = np.vectorize(math.sin)\n",
+    "f1([32,32,232])\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from datetime"
    ]
   },
   {
@@ -26,29 +767,39 @@
    "source": []
   },
   {
-   "cell_type": "markdown",
+   "cell_type": "code",
+   "execution_count": null,
    "metadata": {},
-   "source": [
-    "### Whatever"
-   ]
+   "outputs": [],
+   "source": []
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
+   "execution_count": null,
    "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "hello\n"
-     ]
-    }
-   ],
-   "source": [
-    "if y > 32:\n",
-    "    print('hello')"
-   ]
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
   },
   {
    "cell_type": "code",
