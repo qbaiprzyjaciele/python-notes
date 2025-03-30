@@ -1,27 +1,27 @@
-# this simple script allows to control MIDI commands using hand gestures 
-# detected in certain areas of the camera viewport
+# This simple script allows to control MIDI commands using hand gestures detected in certain areas of the camera viewport.
+# Areas may be used as 2-axis PAD to control parametrs in music software such as Ableton Live
+# author: Jakub Smorąg
 
 import cv2
 import math
 import mediapipe as mp
 from mido import Message, open_output, get_output_names
 
-MIDI_PORT = 'QbToAbleton 2'
+WRIST_INDEX = 0
+THUMB_INDEX = 4
+POINT_FINGER_TIP_INDEX = 8
+POINT_FINGER_DOWN_INDEX = 6
+MIDI_PORT = 'YOUR_MIDI_PORT_NAME'
+FINGERPOINTING_DISTANCE = 0.275
+hand_detected = False
+
 print(get_output_names())
 midi_out = open_output(MIDI_PORT)
 
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(max_num_hands=1, min_detection_confidence=0.6) 
 drawing = mp.solutions.drawing_utils
-
 video_capture = cv2.VideoCapture(1)
-
-hand_detected = False
-
-WRIST_INDEX = 0
-THUMB_INDEX = 4
-POINT_FINGER_TIP_INDEX = 8
-POINT_FINGER_DOWN_INDEX = 6
 
 def distance(x1, y1, x2, y2):
     return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
@@ -61,7 +61,7 @@ while True:
             drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
             if is_in_top_right(point_finger_tip.x, point_finger_tip.y, 1, 1):
                 tip_distance = distance(wrist.x, wrist.y, point_finger_tip.x, point_finger_tip.y)
-                if tip_distance > 0.275:
+                if tip_distance > FINGERPOINTING_DISTANCE:
                     scale_x = (point_finger_tip.x - 0.5)/0.5
                     scale_y = point_finger_tip.y/0.25
                     message_x = int(127*scale_x)
